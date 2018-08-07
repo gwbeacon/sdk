@@ -1,0 +1,180 @@
+syntax="proto3";
+
+package v1;
+
+enum SdkVersion {
+    _ = 0;
+    V1 = 1;
+}
+
+enum Code {
+    OK = 0;
+    Failed = 1;
+}
+
+message Page {
+    int32 size = 1;
+    int32 number = 2;
+}
+
+message Result {
+    Code code = 1;
+    string msg = 2;
+}
+
+enum FeatureType {
+    FeatureTypeALL = 0;
+    FeatureTypeQuery = 1;
+    FeatureTypeUser = 2;
+    FeatureTypeRoster = 3;
+    FeatureTypeMessage = 4;
+    FeatureTypeMUC = 5;
+}
+
+message Feature {
+    FeatureType type = 1;
+    string name = 2;
+    int32 version = 3;
+    string desc = 4;
+}
+
+message FeatureQuery {
+    FeatureType type = 1;
+}
+
+message FeatureList {
+    repeated Feature list = 1;
+}
+
+service QueryService {
+    rpc GetFeatureList(FeatureQuery)returns(FeatureList){}
+}
+
+message User {
+    string domain = 1;
+    string name = 2;
+    string nickName = 4;
+}
+
+message UserAccount {
+    string domain = 1;
+    string name = 2;
+    string passwd = 3;
+}
+
+message UserInfo {
+    map<string,string> extension = 1;
+    User user = 2;
+    string gender = 3;
+    string country = 4;
+    string organization = 5;
+    string email = 6;
+    string phone = 7;
+}
+
+message ClientInfo {
+    map<string,string> extension = 1;
+    string clientType = 2;
+    string clientVersion = 3;
+    string osType = 4;
+    string osVersion = 5;
+    string deviceType = 6;
+    string deviceNumber = 7;
+}
+
+message Session {
+    string sid = 1;
+    int64 loginTime = 2;
+}
+
+service UserService {
+    rpc Register(UserAccount)returns(Result){}
+    rpc Login(UserAccount) returns(Result){}
+    rpc RegisterClient(ClientInfo) returns(Session){}
+    rpc GetInfo(User) returns(UserInfo){}
+    rpc UpdateInfo(UserInfo) returns(UserInfo){}
+    rpc Logout(UserInfo) returns(Result){}
+}
+
+message ChatMessage {
+    map<string,string> extension = 1;
+    int64 id = 2;
+    int32 type = 3;
+    string domain = 4;
+    string from = 5;
+    string to = 6;
+    string msg = 7;
+}
+
+message AckMessage {
+    string domain = 4;
+    string from = 1;
+    string to = 2;
+    int64 id = 3;
+}
+
+message Heartbeat {
+    string domain = 1;
+    string from = 2;
+    int64 index  = 3;
+    int64 clientTime = 4;
+    int64 serverTime = 5;
+    int64 nextDuration = 6;
+}
+
+service MessageService {
+    rpc OnAckMessage(stream AckMessage) returns(stream AckMessage){}
+    rpc OnChatMessage(stream ChatMessage) returns(stream ChatMessage){}
+    rpc OnHeartbeat(stream Heartbeat) returns(stream Heartbeat){}
+}
+
+message MUCInfo {
+    map<string,string> extension = 1;
+    string domain = 2;
+    int64 id = 3;
+    int32 type = 4;
+    string name = 5;
+}
+
+message MUCList {
+    Page page = 1;
+    repeated MUCInfo muc = 2;
+}
+
+service MUCService{
+    rpc List(Page)returns(MUCList){}
+    rpc Create(MUCInfo)returns(MUCInfo){}
+    rpc Destroy(MUCInfo)returns(Result){}
+    rpc UpdateInfo(MUCInfo)returns(MUCInfo){}
+    rpc Join(MUCInfo) returns(Result){}
+    rpc Leave(UserInfo) returns(Result){}
+    rpc AddMember(UserInfo) returns(Result){}
+    rpc RemoveMember(UserInfo)returns(Result){}
+}
+
+enum RosterType {
+    None = 0;
+    Both = 1;
+    Block = 2;
+    Black = 3;
+}
+
+message Roster {
+    User user = 1;
+    RosterType type = 2;
+}
+
+message RosterList {
+    Page page = 1;
+    repeated User user = 2;
+}
+
+service RosterService {
+    rpc List(Page)returns(RosterList){}
+    rpc Add(User)returns(Result){}
+    rpc Remove(User)returns(Result){}
+    rpc AddBlock(User)returns(Result){}
+    rpc RemoveBlock(User)returns(Result){}
+    rpc AddBlack(User)returns(Result){}
+    rpc RemoveBlack(User)returns(Result){}
+}
