@@ -88,8 +88,8 @@ message Session {
 }
 
 service UserService {
-    rpc Register(UserAccount)returns(Result){}
-    rpc Login(UserAccount) returns(Result){}
+    rpc SignUp(UserAccount)returns(Result){}
+    rpc SignIn(UserAccount) returns(Result){}
     rpc RegisterClient(ClientInfo) returns(Session){}
     rpc GetInfo(User) returns(UserInfo){}
     rpc UpdateInfo(UserInfo) returns(UserInfo){}
