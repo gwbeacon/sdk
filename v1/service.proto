@@ -22,24 +22,14 @@ message Result {
     string msg = 2;
 }
 
-enum FeatureType {
-    FeatureTypeALL = 0;
-    FeatureTypeQuery = 1;
-    FeatureTypeUser = 2;
-    FeatureTypeRoster = 3;
-    FeatureTypeMessage = 4;
-    FeatureTypeMUC = 5;
-}
-
 message Feature {
-    FeatureType type = 1;
     string name = 2;
     int32 version = 3;
     string desc = 4;
 }
 
 message FeatureQuery {
-    FeatureType type = 1;
+    string name = 1;
 }
 
 message FeatureList {
@@ -58,8 +48,9 @@ message User {
 
 message UserAccount {
     string domain = 1;
-    string name = 2;
-    string passwd = 3;
+    string device = 2;
+    string name = 3;
+    string passwd = 4;
 }
 
 message UserInfo {
@@ -83,13 +74,13 @@ message ClientInfo {
 }
 
 message Session {
-    string sid = 1;
+    uint64 id = 1;
     int64 loginTime = 2;
 }
 
 service UserService {
     rpc SignUp(UserAccount)returns(Result){}
-    rpc SignIn(UserAccount) returns(Result){}
+    rpc SignIn(UserAccount) returns(UserInfo){}
     rpc RegisterClient(ClientInfo) returns(Session){}
     rpc GetInfo(User) returns(UserInfo){}
     rpc UpdateInfo(UserInfo) returns(UserInfo){}
@@ -98,8 +89,8 @@ service UserService {
 
 message ChatMessage {
     map<string,string> extension = 1;
-    int64 id = 2;
-    int32 type = 3;
+    uint64 id = 2;
+    uint32 type = 3;
     string domain = 4;
     string from = 5;
     string to = 6;
@@ -110,13 +101,13 @@ message AckMessage {
     string domain = 4;
     string from = 1;
     string to = 2;
-    int64 id = 3;
+    uint64 id = 3;
 }
 
 message Heartbeat {
     string domain = 1;
     string from = 2;
-    int64 index  = 3;
+    uint64 index  = 3;
     int64 clientTime = 4;
     int64 serverTime = 5;
     int64 nextDuration = 6;
@@ -131,7 +122,7 @@ service MessageService {
 message MUCInfo {
     map<string,string> extension = 1;
     string domain = 2;
-    int64 id = 3;
+    uint64 id = 3;
     int32 type = 4;
     string name = 5;
 }
