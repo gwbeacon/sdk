@@ -1,4 +1,4 @@
-module github.com/gwbeacon/sdk
+module github.com/gwbeacon/sdk/v1
 
 go 1.12
 
